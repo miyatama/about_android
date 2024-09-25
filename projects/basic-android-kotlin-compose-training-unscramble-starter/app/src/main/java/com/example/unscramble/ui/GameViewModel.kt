@@ -8,38 +8,60 @@ import com.example.unscramble.data.allWords
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class GameViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState :StateFlow<GameUiState> = _uiState.asStateFlow()
-
-    private lateinit var currentWord: String
-    private var usedWords: MutableSet<String> = mutableSetOf()
-    private var userGuess by mutableStateOf("")
 
     init {
         resetGame()
     }
 
     fun resetGame() {
-        usedWords.clear()
         _uiState.value = GameUiState(
             currentScrambleWord = pickRandomWordAndShuffle(),
+            usedWords = setOf(),
         )
     }
 
     fun updateUserGuess(guessWord: String) {
-        _uiState.value = _uiState.value.copy(
-            userGuess = guessWord,
-        )
+        _uiState.update { currentState ->
+            currentState.copy(
+                userGuess = guessWord,
+            )
+        }
+    }
+
+    fun checkUserGuess() {
+        val userGuess = _uiState.value.userGuess
+        val currentWord = _uiState.value.currentWord
+        if (userGuess.equals(currentWord, ignoreCase = true)) {
+
+        } else {
+            _uiState.update { state ->
+                state.copy(
+                    isGuessedWordWrong = true,
+                )
+            }
+        }
+        updateUserGuess("")
     }
 
     private fun pickRandomWordAndShuffle(): String {
-        currentWord = allWords.random()
+        val currentWord = allWords.random()
+        val usedWords = _uiState.value.usedWords.toMutableSet()
         if (usedWords.contains(currentWord)) {
             return pickRandomWordAndShuffle()
         } else {
-            usedWords.add(currentWord)
+            _uiState.update {currentState ->
+                currentState.copy(
+                    currentWord = currentWord,
+                    usedWords = usedWords.apply {
+                        add(currentWord)
+                    }
+                )
+            }
             return currentWord
         }
     }
