@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.unscramble.data.SCORE_INCREASE
 import com.example.unscramble.data.allWords
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,8 +20,10 @@ class GameViewModel: ViewModel() {
     }
 
     fun resetGame() {
+        val word = pickRandomWordAndShuffle()
         _uiState.value = GameUiState(
-            currentScrambleWord = pickRandomWordAndShuffle(),
+            currentWord = word,
+            currentScrambleWord = shuffleCurrentWord(word),
             usedWords = setOf(),
         )
     }
@@ -37,7 +40,9 @@ class GameViewModel: ViewModel() {
         val userGuess = _uiState.value.userGuess
         val currentWord = _uiState.value.currentWord
         if (userGuess.equals(currentWord, ignoreCase = true)) {
-
+            updateGameScore(
+                _uiState.value.score.plus(SCORE_INCREASE)
+            )
         } else {
             _uiState.update { state ->
                 state.copy(
@@ -48,20 +53,17 @@ class GameViewModel: ViewModel() {
         updateUserGuess("")
     }
 
+    fun skipWord() {
+        updateGameScore(_uiState.value.score)
+        updateUserGuess("")
+    }
+
     private fun pickRandomWordAndShuffle(): String {
         val currentWord = allWords.random()
         val usedWords = _uiState.value.usedWords.toMutableSet()
         if (usedWords.contains(currentWord)) {
             return pickRandomWordAndShuffle()
         } else {
-            _uiState.update {currentState ->
-                currentState.copy(
-                    currentWord = currentWord,
-                    usedWords = usedWords.apply {
-                        add(currentWord)
-                    }
-                )
-            }
             return currentWord
         }
     }
@@ -72,6 +74,23 @@ class GameViewModel: ViewModel() {
         while(String(temp).equals(word)){
             temp.shuffle()
         }
-            return  String(temp)
+        return String(temp)
+    }
+
+    private fun updateGameScore(newScore: Int) {
+        val word = pickRandomWordAndShuffle()
+        _uiState.update { state ->
+            state.copy(
+                score = newScore,
+                currentWord = word,
+                currentScrambleWord = shuffleCurrentWord(word),
+                currentWordCount = state.currentWordCount.inc(),
+                isGuessedWordWrong = false,
+                usedWords = state.usedWords.toMutableSet().apply {
+                    add(word)
+                }
+            )
+
+        }
     }
 }
