@@ -8,4 +8,5 @@ data class GameUiState (
     val usedWords: Set<String> = setOf(),
     val isGuessedWordWrong: Boolean = false,
     val score: Int = 0,
+    val isGameOver: Boolean = false,
 )

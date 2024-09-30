@@ -131,6 +131,15 @@ fun GameScreen(
 
         GameStatus(score = uiState.score, modifier = Modifier.padding(20.dp))
     }
+
+    if (uiState.isGameOver) {
+        FinalScoreDialog(
+            score = uiState.score,
+            onPlayAgain = {
+                viewModel.resetGame()
+            }
+        )
+    }
 }
 
 @Composable
