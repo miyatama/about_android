@@ -11,6 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import net.miyataroid.miyatamagrimoire.ui.theme.MiyatamaGrimoireTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +22,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MiyatamaGrimoireTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainApp()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun MainApp(
+    modifier: Modifier = Modifier,
+    navController: NavController = rememberNavController(),
+) {
+    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+        NavHost(
+            navController = navController,
+            modifier = Modifier.fillMaxSize(),
+        ) {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MiyatamaGrimoireTheme {
-        Greeting("Android")
+        }
     }
 }
