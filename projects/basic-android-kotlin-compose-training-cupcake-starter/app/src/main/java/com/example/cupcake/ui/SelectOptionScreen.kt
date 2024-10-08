@@ -52,6 +52,8 @@ fun SelectOptionScreen(
     subtotal: String,
     options: List<String>,
     onSelectionChanged: (String) -> Unit = {},
+    onCancelButtonClick: () -> Unit,
+    onNextButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedValue by rememberSaveable { mutableStateOf("") }
@@ -105,7 +107,9 @@ fun SelectOptionScreen(
         ) {
             OutlinedButton(
                 modifier = Modifier.weight(1f),
-                onClick = {}
+                onClick = {
+                    onCancelButtonClick()
+                }
             ) {
                 Text(stringResource(R.string.cancel))
             }
@@ -113,7 +117,9 @@ fun SelectOptionScreen(
                 modifier = Modifier.weight(1f),
                 // the button is enabled when the user makes a selection
                 enabled = selectedValue.isNotEmpty(),
-                onClick = {}
+                onClick = {
+                    onNextButtonClick()
+                }
             ) {
                 Text(stringResource(R.string.next))
             }
@@ -128,7 +134,9 @@ fun SelectOptionPreview() {
         SelectOptionScreen(
             subtotal = "299.99",
             options = listOf("Option 1", "Option 2", "Option 3", "Option 4"),
-            modifier = Modifier.fillMaxHeight()
+            onCancelButtonClick = {},
+        onNextButtonClick = {},
+            modifier = Modifier.fillMaxHeight(),
         )
     }
 }

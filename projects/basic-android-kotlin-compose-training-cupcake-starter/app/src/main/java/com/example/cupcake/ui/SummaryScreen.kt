@@ -48,6 +48,8 @@ import com.example.cupcake.ui.theme.CupcakeTheme
 @Composable
 fun OrderSummaryScreen(
     orderUiState: OrderUiState,
+    onCancelButtonClick: () -> Unit,
+    onSendButtonClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val resources = LocalContext.current.resources
@@ -103,13 +105,17 @@ fun OrderSummaryScreen(
             ) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {}
+                    onClick = {
+                        onSendButtonClick(newOrder, orderSummary)
+                    }
                 ) {
                     Text(stringResource(R.string.send))
                 }
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {}
+                    onClick = {
+                        onCancelButtonClick()
+                    }
                 ) {
                     Text(stringResource(R.string.cancel))
                 }
@@ -124,6 +130,8 @@ fun OrderSummaryPreview() {
     CupcakeTheme {
         OrderSummaryScreen(
             orderUiState = OrderUiState(0, "Test", "Test", "$300.00"),
+            onCancelButtonClick = {},
+        onSendButtonClick = {_, _ ->},
             modifier = Modifier.fillMaxHeight()
         )
     }
