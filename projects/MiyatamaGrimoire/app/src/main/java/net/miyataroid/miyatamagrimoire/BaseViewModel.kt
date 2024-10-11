@@ -5,5 +5,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class HomeViewModel(): BaseViewModel<HomeUiState>() {
+abstract class BaseViewModel<T>: ViewModel() {
+    var _uiState = MutableStateFlow(T())
+    var uiState: StateFlow<T> =_uiState.asStateFlow()
+
+    init {
+        _uiState = MutableStateFlow<T>(T())
+    }
 }

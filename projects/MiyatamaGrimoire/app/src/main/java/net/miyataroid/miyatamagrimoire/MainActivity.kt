@@ -38,7 +38,9 @@ fun MainApp(
             navController = navController,
             modifier = Modifier.fillMaxSize(),
         ) {
-
+            appGraph(
+                navController,
+            )
         }
     }
 }

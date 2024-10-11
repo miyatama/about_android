@@ -9,6 +9,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun HomeScreen(
+    navigateToGrimoreEdit: () -> Unit,
+    navigateToGrimoreView: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
 ) {
