@@ -8,21 +8,33 @@ object Home
 object GrimoireEdit
 object GrimoireView
 
+enum class Screens(name: String) {
+    Home("home"),
+    GrimoireEdit("gremoire_edit"),
+    GrimoireView("grimoire_view"),
+}
+
 fun NavGraphBuilder.appGraph (
     navController: NavController,
 ){
-    composable<Home>() {
+    composable(
+        route = Screens.Home.name,
+    ) {
         HomeScreen(
             navigateToGrimoreEdit = {},
             navigateToGrimoreView = {},
         )
     }
 
-    composable<GrimoireEdit>() {
-
+    composable(
+        route = Screens.GrimoireEdit.name,
+    ) {
+        GrimoireEditScreen()
     }
 
-    composable<GrimoireView>() {
-
+    composable(
+        route = Screens.GrimoireView.name,
+    ) {
+        GrimoireViewScreen()
     }
 }
