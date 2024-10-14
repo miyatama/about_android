@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MiyatamaGrimoire</string>
+
+
+    <string translatable="false" name="options_title_with_depth">Your device supports depth</string>
+    <string translatable="false" name="depth_use_explanation">When Depth is enabled on supported devices, virtual objects adapt to the environment by blending in with the real world.</string>
+    <string translatable="false" name="button_text_enable_depth">Enable</string>
+    <string translatable="false" name="button_text_disable_depth">Disable</string>
 </resources>

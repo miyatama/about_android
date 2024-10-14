@@ -17,13 +17,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import net.miyataroid.miyatamagrimoire.ui.theme.MiyatamaGrimoireTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
     navigateToGrimoreEdit: () -> Unit,
     navigateToGrimoreView: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(),
+    viewModel: HomeViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     HomeScreenContent(
