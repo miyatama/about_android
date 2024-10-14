@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import net.miyataroid.miyatamagrimoire.ui.theme.MiyatamaGrimoireTheme
@@ -31,11 +32,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
+    navController: NavHostController = rememberNavController(),
 ) {
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
         NavHost(
+            navController = navController,
             startDestination = Screens.Home.name,
+            modifier = Modifier.padding(innerPadding)
         ) {
             appGraph(
                 navController,

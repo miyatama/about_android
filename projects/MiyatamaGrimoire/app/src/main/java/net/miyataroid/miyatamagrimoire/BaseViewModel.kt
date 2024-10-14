@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 abstract class BaseViewModel<T>: ViewModel() {
-    // var _uiState:MutableStateFlow<T> = MutableStateFlow(T())
-    // var uiState: StateFlow<T> =_uiState.asStateFlow()
+    abstract val initialState: T
+    val uiState: MutableStateFlow<T> by lazy {
+        MutableStateFlow(initialState)
+    }
+    val state: StateFlow<T>
+        get() = uiState
 }

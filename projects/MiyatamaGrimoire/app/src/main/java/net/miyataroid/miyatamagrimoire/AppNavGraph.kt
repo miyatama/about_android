@@ -3,6 +3,9 @@ package net.miyataroid.miyatamagrimoire
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import net.miyataroid.miyatamagrimoire.edit.GrimoireEditScreen
+import net.miyataroid.miyatamagrimoire.home.HomeScreen
+import net.miyataroid.miyatamagrimoire.view.GrimoireViewScreen
 
 object Home
 object GrimoireEdit
@@ -21,8 +24,12 @@ fun NavGraphBuilder.appGraph (
         route = Screens.Home.name,
     ) {
         HomeScreen(
-            navigateToGrimoreEdit = {},
-            navigateToGrimoreView = {},
+            navigateToGrimoreEdit = {
+                navController.navigate(Screens.GrimoireEdit.name)
+            },
+            navigateToGrimoreView = {
+                navController.navigate(Screens.GrimoireView.name)
+            },
         )
     }
 
