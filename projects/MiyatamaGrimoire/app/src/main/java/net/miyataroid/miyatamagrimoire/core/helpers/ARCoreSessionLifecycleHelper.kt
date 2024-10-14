@@ -35,6 +35,8 @@ interface ARCoreSessionLifecycleHelper : DefaultLifecycleObserver {
      */
     var beforeSessionResume: ((Session) -> Unit)?
 
+    var activity: Activity?
+
     /**
      * Attempts to create a session. If Google Play Services for AR is not installed or not up to
      * date, request installation.
@@ -69,10 +71,4 @@ interface ARCoreSessionLifecycleHelper : DefaultLifecycleObserver {
         session?.close()
         session = null
     }
-
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        results: IntArray
-    )
 }

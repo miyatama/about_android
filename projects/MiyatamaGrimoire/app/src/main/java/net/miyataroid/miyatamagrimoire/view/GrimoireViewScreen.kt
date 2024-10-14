@@ -2,6 +2,7 @@ package net.miyataroid.miyatamagrimoire.view
 
 import android.app.Activity
 import android.opengl.GLSurfaceView
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,10 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import net.miyataroid.miyatamagrimoire.MainActivity
 import com.google.ar.core.Session
 import net.miyataroid.miyatamagrimoire.R
+import net.miyataroid.miyatamagrimoire.core.helpers.CameraPermissionHelper
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -38,44 +41,67 @@ fun GrimoireViewScreen(
     modifier: Modifier = Modifier,
     viewModel: GrimoireViewViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-   DisposableEffect(lifecycleOwner) {
-       val observer = LifecycleEventObserver {_, event ->
-           when(event) {
-               Lifecycle.Event.ON_START -> {
-               }
-               Lifecycle.Event.ON_RESUME -> {}
-               else -> {}
-           }
-       }
-
-       lifecycleOwner.lifecycle.addObserver(observer)
-       viewModel.setArCoreSessionLifecycleObserver(lifecycleOwner.lifecycle)
-
-       onDispose {
-           lifecycleOwner.lifecycle.removeObserver(observer)
-       }
-   }
-
-    GrimoireViewScreenContent(
-        uiState = uiState ,
-        modifier = modifier,
-    )
-
-    if (uiState.session != null &&
-        uiState.session!!.isDepthModeSupported(Config.DepthMode.AUTOMATIC)  &&
-        uiState.shouldShowDepthEnableDialog
-    ) {
-        NeedDepthDialog(
-            onClickPositive = {
-                viewModel.setUseDepthForOcclusion(true)
-            },
-            onClickNegative = {
-                viewModel.setUseDepthForOcclusion(false)
-            },
+    val cameraPermissionState by remember {mutableStateOf(false)}
+    val activity = LocalContext.current as Activity
+    viewModel.setArCoreSessionActivity(activity)
+    if (!CameraPermissionHelper.hasCameraPermission(activity)) {
+        // Use toast instead of snackbar here since the activity will exit.
+        Toast.makeText(
+            activity,
+            "Camera permission is needed to run this application",
+            Toast.LENGTH_LONG
         )
+            .show()
+        if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(activity)) {
+            // Permission denied with checking "Do not ask again".
+            CameraPermissionHelper.launchPermissionSettings(activity)
+        }
+    } else if (ArCoreApk.getInstance()
+            .requestInstall(activity, false) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
+    ) {
+        // TODO wait for install ArCoreApk
+    } else {
+        val uiState by viewModel.uiState.collectAsState()
+        val lifecycleOwner = LocalLifecycleOwner.current
+
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_START -> {
+                    }
+
+                    Lifecycle.Event.ON_RESUME -> {}
+                    else -> {}
+                }
+            }
+
+            lifecycleOwner.lifecycle.addObserver(observer)
+            viewModel.setArCoreSessionLifecycleObserver(lifecycleOwner.lifecycle)
+
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+
+        GrimoireViewScreenContent(
+            uiState = uiState,
+            modifier = modifier,
+        )
+
+        if (uiState.session != null &&
+            uiState.session!!.isDepthModeSupported(Config.DepthMode.AUTOMATIC) &&
+            uiState.shouldShowDepthEnableDialog
+        ) {
+            NeedDepthDialog(
+                onClickPositive = {
+                    viewModel.setUseDepthForOcclusion(true)
+                },
+                onClickNegative = {
+                    viewModel.setUseDepthForOcclusion(false)
+                },
+            )
+        }
     }
 }
 
@@ -92,7 +118,7 @@ private fun GrimoireViewScreenContent(
             factory = { context ->
                 GLSurfaceView(context)
             },
-            update = { surfaceView->
+            update = { surfaceView ->
 
             },
             modifier = Modifier
@@ -113,14 +139,14 @@ private fun GrimoireViewScreenContent(
 @Composable
 private fun NeedDepthDialog(
     onClickPositive: () -> Unit,
-    onClickNegative : () -> Unit,
+    onClickNegative: () -> Unit,
 ) {
     AppAlertDialog(
         title = stringResource(R.string.options_title_with_depth),
         message = stringResource(id = R.string.depth_use_explanation),
         positiveText = stringResource(id = R.string.button_text_enable_depth),
         negativeText = stringResource(id = R.string.button_text_disable_depth),
-        onClickPositive = onClickPositive ,
-        onClickNegative = onClickNegative ,
+        onClickPositive = onClickPositive,
+        onClickNegative = onClickNegative,
     )
 }

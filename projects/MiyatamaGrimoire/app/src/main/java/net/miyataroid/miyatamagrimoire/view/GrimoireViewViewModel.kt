@@ -1,5 +1,6 @@
 package net.miyataroid.miyatamagrimoire.view
 
+import android.app.Activity
 import androidx.lifecycle.Lifecycle
 import com.google.ar.core.Config
 import com.google.ar.core.Config.InstantPlacementMode
@@ -66,5 +67,9 @@ class GrimoireViewViewModel(
 
     fun setArCoreSessionLifecycleObserver(lifecycle: Lifecycle) {
         lifecycle.addObserver(arCoreSessionLifecycleHelper)
+    }
+
+    fun setArCoreSessionActivity(activity: Activity) {
+        arCoreSessionLifecycleHelper.activity = activity
     }
 }

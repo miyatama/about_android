@@ -1,17 +1,15 @@
 package net.miyataroid.miyatamagrimoire.core.helpers
 
 import android.app.Activity
-import android.widget.Toast
-import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Session
 
 class ARCoreSessionLifecycleHelperImpl(
-    val activity: Activity,
     val features: Set<Session.Feature> = setOf()
-) : ARCoreSessionLifecycleHelper{
+) : ARCoreSessionLifecycleHelper {
 
     override var installRequested = false
     override var session: Session? = null
+    override var activity: Activity? = null
 
     /**
      * Creating a session may fail. In this case, session will remain null, and this function will be
@@ -41,51 +39,11 @@ class ARCoreSessionLifecycleHelperImpl(
      * exception.
      */
     override fun tryCreateSession(): Session? {
-        // The app must have been given the CAMERA permission. If we don't have it yet, request it.
-        if (!CameraPermissionHelper.hasCameraPermission(activity)) {
-            CameraPermissionHelper.requestCameraPermission(activity)
-            return null
-        }
-
         return try {
-            // Request installation if necessary.
-            when (ArCoreApk.getInstance().requestInstall(activity, !installRequested)!!) {
-                ArCoreApk.InstallStatus.INSTALL_REQUESTED -> {
-                    installRequested = true
-                    // tryCreateSession will be called again, so we return null for now.
-                    return null
-                }
-                ArCoreApk.InstallStatus.INSTALLED -> {
-                    // Left empty; nothing needs to be done.
-                }
-            }
-
-            // Create a session if Google Play Services for AR is installed and up to date.
             Session(activity, features)
         } catch (e: Exception) {
             exceptionCallback?.invoke(e)
             null
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        results: IntArray
-    ) {
-        if (!CameraPermissionHelper.hasCameraPermission(activity)) {
-            // Use toast instead of snackbar here since the activity will exit.
-            Toast.makeText(
-                activity,
-                "Camera permission is needed to run this application",
-                Toast.LENGTH_LONG
-            )
-                .show()
-            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(activity)) {
-                // Permission denied with checking "Do not ask again".
-                CameraPermissionHelper.launchPermissionSettings(activity)
-            }
-            activity.finish()
         }
     }
 }

@@ -14,10 +14,8 @@ val appModules = module {
     single<DepthSettings> {
         DepthSettingsImpl(get())
     }
-    scope<MainActivity> {
-        scoped {
-            ARCoreSessionLifecycleHelperImpl(get())
-        }
+    single<ARCoreSessionLifecycleHelper> {
+        ARCoreSessionLifecycleHelperImpl()
     }
     viewModel {
         HomeViewModel()
