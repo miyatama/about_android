@@ -9,7 +9,9 @@ class GrimoireApp: Application() {
         super.onCreate()
         startKoin {
             androidContext(this@GrimoireApp)
-            modules
+            modules(
+                appModules
+            )
         }
     }
 }

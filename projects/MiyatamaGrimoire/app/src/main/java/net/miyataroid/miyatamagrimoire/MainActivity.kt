@@ -17,9 +17,6 @@ import net.miyataroid.miyatamagrimoire.ui.theme.MiyatamaGrimoireTheme
 import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelper
 
 class MainActivity : ComponentActivity() {
-    lateinit var arCoreSessionHelper: ARCoreSessionLifecycleHelper
-    // lateinit var renderer: HelloArRenderer
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

@@ -40,14 +40,11 @@ fun GrimoireViewScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val activity = LocalContext.current as MainActivity
-    var session by remember { mutableStateOf<Session?>(null ) }
 
    DisposableEffect(lifecycleOwner) {
        val observer = LifecycleEventObserver {_, event ->
            when(event) {
                Lifecycle.Event.ON_START -> {
-                   session = activity.arCoreSessionHelper.session
                }
                Lifecycle.Event.ON_RESUME -> {}
                else -> {}
@@ -55,6 +52,7 @@ fun GrimoireViewScreen(
        }
 
        lifecycleOwner.lifecycle.addObserver(observer)
+       viewModel.setArCoreSessionLifecycleObserver(lifecycleOwner.lifecycle)
 
        onDispose {
            lifecycleOwner.lifecycle.removeObserver(observer)
@@ -66,8 +64,8 @@ fun GrimoireViewScreen(
         modifier = modifier,
     )
 
-    if (session != null &&
-        session!!.isDepthModeSupported(Config.DepthMode.AUTOMATIC)  &&
+    if (uiState.session != null &&
+        uiState.session!!.isDepthModeSupported(Config.DepthMode.AUTOMATIC)  &&
         uiState.shouldShowDepthEnableDialog
     ) {
         NeedDepthDialog(

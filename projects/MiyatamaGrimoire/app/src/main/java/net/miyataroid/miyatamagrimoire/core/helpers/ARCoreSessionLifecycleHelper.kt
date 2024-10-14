@@ -13,13 +13,9 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
  * requests installation of Google Play Services for AR if it's not installed or not up to date and
  * asks the user for required permissions if necessary.
  */
-class ARCoreSessionLifecycleHelper(
-    val activity: Activity,
-    val features: Set<Session.Feature> = setOf()
-) : DefaultLifecycleObserver {
-    var installRequested = false
-    var session: Session? = null
-        private set
+interface ARCoreSessionLifecycleHelper : DefaultLifecycleObserver {
+    var installRequested:Boolean
+    var session: Session?
 
     /**
      * Creating a session may fail. In this case, session will remain null, and this function will be
@@ -29,7 +25,7 @@ class ARCoreSessionLifecycleHelper(
      * [the `Session` constructor](https://developers.google.com/ar/reference/java/com/google/ar/core/Session#Session(android.content.Context)
      * ) for more details.
      */
-    var exceptionCallback: ((Exception) -> Unit)? = null
+    var exceptionCallback: ((Exception) -> Unit)?
 
     /**
      * Before `Session.resume()` is called, a session must be configured. Use
@@ -37,7 +33,7 @@ class ARCoreSessionLifecycleHelper(
      * or
      * [`setCameraConfig`](https://developers.google.com/ar/reference/java/com/google/ar/core/Session#setCameraConfig-cameraConfig)
      */
-    var beforeSessionResume: ((Session) -> Unit)? = null
+    var beforeSessionResume: ((Session) -> Unit)?
 
     /**
      * Attempts to create a session. If Google Play Services for AR is not installed or not up to
@@ -48,33 +44,7 @@ class ARCoreSessionLifecycleHelper(
      * any reason. In the case of a failure, [exceptionCallback] is invoked with the failure
      * exception.
      */
-    private fun tryCreateSession(): Session? {
-        // The app must have been given the CAMERA permission. If we don't have it yet, request it.
-        if (!CameraPermissionHelper.hasCameraPermission(activity)) {
-            CameraPermissionHelper.requestCameraPermission(activity)
-            return null
-        }
-
-        return try {
-            // Request installation if necessary.
-            when (ArCoreApk.getInstance().requestInstall(activity, !installRequested)!!) {
-                ArCoreApk.InstallStatus.INSTALL_REQUESTED -> {
-                    installRequested = true
-                    // tryCreateSession will be called again, so we return null for now.
-                    return null
-                }
-                ArCoreApk.InstallStatus.INSTALLED -> {
-                    // Left empty; nothing needs to be done.
-                }
-            }
-
-            // Create a session if Google Play Services for AR is installed and up to date.
-            Session(activity, features)
-        } catch (e: Exception) {
-            exceptionCallback?.invoke(e)
-            null
-        }
-    }
+    fun tryCreateSession(): Session?
 
     override fun onResume(owner: LifecycleOwner) {
         val session = this.session ?: tryCreateSession() ?: return
@@ -104,20 +74,5 @@ class ARCoreSessionLifecycleHelper(
         requestCode: Int,
         permissions: Array<out String>,
         results: IntArray
-    ) {
-        if (!CameraPermissionHelper.hasCameraPermission(activity)) {
-            // Use toast instead of snackbar here since the activity will exit.
-            Toast.makeText(
-                activity,
-                "Camera permission is needed to run this application",
-                Toast.LENGTH_LONG
-            )
-                .show()
-            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(activity)) {
-                // Permission denied with checking "Do not ask again".
-                CameraPermissionHelper.launchPermissionSettings(activity)
-            }
-            activity.finish()
-        }
-    }
+    )
 }
