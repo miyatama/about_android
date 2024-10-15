@@ -34,6 +34,8 @@ import net.miyataroid.miyatamagrimoire.MainActivity
 import com.google.ar.core.Session
 import net.miyataroid.miyatamagrimoire.R
 import net.miyataroid.miyatamagrimoire.core.helpers.CameraPermissionHelper
+import net.miyataroid.miyatamagrimoire.ui.LargeButton
+import net.miyataroid.miyatamagrimoire.ui.SmallButton
 import net.miyataroid.miyatamagrimoire.ui.SystemMessageOverlay
 import org.koin.androidx.compose.koinViewModel
 
@@ -44,10 +46,33 @@ fun GrimoireViewScreen(
     viewModel: GrimoireViewViewModel = koinViewModel(),
 ) {
 
-    val cameraPermissionState by remember {mutableStateOf(false)}
     val activity = LocalContext.current as Activity
+    var cameraPermissionState by remember {mutableStateOf(CameraPermissionHelper.hasCameraPermission(activity))}
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> {
+                }
+
+                Lifecycle.Event.ON_RESUME -> {
+                    cameraPermissionState = CameraPermissionHelper.hasCameraPermission(activity)
+                }
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        viewModel.setArCoreSessionLifecycleObserver(lifecycleOwner.lifecycle)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     viewModel.setArCoreSessionActivity(activity)
-    if (!CameraPermissionHelper.hasCameraPermission(activity)) {
+    if (!cameraPermissionState) {
         if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(activity)) {
             SystemMessageOverlay(
                 message = "カメラを有効化しないと使えないぞ!",
@@ -74,29 +99,12 @@ fun GrimoireViewScreen(
         )
     } else {
         val uiState by viewModel.uiState.collectAsState()
-        val lifecycleOwner = LocalLifecycleOwner.current
-
-        DisposableEffect(lifecycleOwner) {
-            val observer = LifecycleEventObserver { _, event ->
-                when (event) {
-                    Lifecycle.Event.ON_START -> {
-                    }
-
-                    Lifecycle.Event.ON_RESUME -> {}
-                    else -> {}
-                }
-            }
-
-            lifecycleOwner.lifecycle.addObserver(observer)
-            viewModel.setArCoreSessionLifecycleObserver(lifecycleOwner.lifecycle)
-
-            onDispose {
-                lifecycleOwner.lifecycle.removeObserver(observer)
-            }
-        }
 
         GrimoireViewScreenContent(
             uiState = uiState,
+            onClickBack = {
+                navigateToBack()
+            },
             modifier = modifier,
         )
 
@@ -119,6 +127,7 @@ fun GrimoireViewScreen(
 @Composable
 private fun GrimoireViewScreenContent(
     uiState: GrimoireViewUiState,
+    onClickBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -140,9 +149,11 @@ private fun GrimoireViewScreenContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
-            Button(onClick = { /*TODO*/ }) {
-                Text(text = "戻る")
-            }
+            LargeButton(
+                selected = true,
+                text = "< Back",
+                onClick = onClickBack,
+            )
         }
     }
 }
