@@ -6,6 +6,7 @@ import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettingsImpl
 import net.miyataroid.miyatamagrimoire.edit.GrimoireEditViewModel
 import net.miyataroid.miyatamagrimoire.home.HomeViewModel
+import net.miyataroid.miyatamagrimoire.splash.SplashViewModel
 import net.miyataroid.miyatamagrimoire.view.GrimoireViewViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -16,6 +17,9 @@ val appModules = module {
     }
     single<ARCoreSessionLifecycleHelper> {
         ARCoreSessionLifecycleHelperImpl()
+    }
+    viewModel {
+        SplashViewModel()
     }
     viewModel {
         HomeViewModel()

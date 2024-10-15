@@ -1,10 +1,12 @@
 package net.miyataroid.miyatamagrimoire
 
+import androidx.compose.runtime.internal.composableLambda
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import net.miyataroid.miyatamagrimoire.edit.GrimoireEditScreen
 import net.miyataroid.miyatamagrimoire.home.HomeScreen
+import net.miyataroid.miyatamagrimoire.splash.SplashScreen
 import net.miyataroid.miyatamagrimoire.view.GrimoireViewScreen
 
 object Home
@@ -12,6 +14,7 @@ object GrimoireEdit
 object GrimoireView
 
 enum class Screens(name: String) {
+    Splash("splash"),
     Home("home"),
     GrimoireEdit("gremoire_edit"),
     GrimoireView("grimoire_view"),
@@ -20,6 +23,15 @@ enum class Screens(name: String) {
 fun NavGraphBuilder.appGraph (
     navController: NavController,
 ){
+    composable(
+        route = Screens.Splash.name,
+    ) {
+        SplashScreen(
+            navigateToHome = {
+                navController.navigate(Screens.Home.name)
+            }
+        )
+    }
     composable(
         route = Screens.Home.name,
     ) {
@@ -42,6 +54,10 @@ fun NavGraphBuilder.appGraph (
     composable(
         route = Screens.GrimoireView.name,
     ) {
-        GrimoireViewScreen()
+        GrimoireViewScreen(
+            navigateToBack = {
+                navController.navigateUp()
+            }
+        )
     }
 }

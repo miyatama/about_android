@@ -36,7 +36,7 @@ fun MainApp(
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screens.Home.name,
+            startDestination = Screens.Splash.name,
             modifier = Modifier.padding(innerPadding)
         ) {
             appGraph(

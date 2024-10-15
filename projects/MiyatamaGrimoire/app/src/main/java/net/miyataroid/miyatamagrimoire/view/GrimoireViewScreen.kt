@@ -34,10 +34,12 @@ import net.miyataroid.miyatamagrimoire.MainActivity
 import com.google.ar.core.Session
 import net.miyataroid.miyatamagrimoire.R
 import net.miyataroid.miyatamagrimoire.core.helpers.CameraPermissionHelper
+import net.miyataroid.miyatamagrimoire.ui.SystemMessageOverlay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun GrimoireViewScreen(
+    navigateToBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GrimoireViewViewModel = koinViewModel(),
 ) {
@@ -46,21 +48,30 @@ fun GrimoireViewScreen(
     val activity = LocalContext.current as Activity
     viewModel.setArCoreSessionActivity(activity)
     if (!CameraPermissionHelper.hasCameraPermission(activity)) {
-        // Use toast instead of snackbar here since the activity will exit.
-        Toast.makeText(
-            activity,
-            "Camera permission is needed to run this application",
-            Toast.LENGTH_LONG
-        )
-            .show()
         if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(activity)) {
-            // Permission denied with checking "Do not ask again".
-            CameraPermissionHelper.launchPermissionSettings(activity)
+            SystemMessageOverlay(
+                message = "カメラを有効化しないと使えないぞ!",
+                onClickOk = {
+                    CameraPermissionHelper.launchPermissionSettings(activity)
+                }
+            )
+        } else {
+            SystemMessageOverlay(
+                message = "この端末ではアプリを使えないぞ!",
+                onClickOk = {
+                    navigateToBack()
+                }
+            )
         }
     } else if (ArCoreApk.getInstance()
             .requestInstall(activity, false) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
     ) {
-        // TODO wait for install ArCoreApk
+        SystemMessageOverlay(
+            message = "ARCoreをインストールしないと使えないぞ！",
+            onClickOk = {
+                navigateToBack()
+            }
+        )
     } else {
         val uiState by viewModel.uiState.collectAsState()
         val lifecycleOwner = LocalLifecycleOwner.current
