@@ -24,6 +24,7 @@ import net.miyataroid.miyatamagrimoire.R
 import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelper
+import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelper
 import net.miyataroid.miyatamagrimoire.core.renderer.Framebuffer
 import net.miyataroid.miyatamagrimoire.core.renderer.GLError
@@ -41,6 +42,7 @@ import java.nio.ByteBuffer
 class GrimoireViewRenderer(
     val activity: Activity,
     val depthSettings: DepthSettings,
+    val instantPlacementSettings: InstantPlacementSettings,
     val arCoreSessionHelper: ARCoreSessionLifecycleHelper,
 ) : SampleRender.Renderer,
     DefaultLifecycleObserver {
@@ -473,7 +475,7 @@ class GrimoireViewRenderer(
         val tap = activity.view.tapHelper.poll() ?: return
 
         val hitResultList =
-            if (activity.instantPlacementSettings.isInstantPlacementEnabled) {
+            if (instantPlacementSettings.isInstantPlacementEnabled) {
                 frame.hitTestInstantPlacement(tap.x, tap.y, APPROXIMATE_DISTANCE_METERS)
             } else {
                 frame.hitTest(tap)

@@ -4,6 +4,8 @@ import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelperImpl
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettingsImpl
+import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
+import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettingsImpl
 import net.miyataroid.miyatamagrimoire.edit.GrimoireEditViewModel
 import net.miyataroid.miyatamagrimoire.home.HomeViewModel
 import net.miyataroid.miyatamagrimoire.splash.SplashViewModel
@@ -14,6 +16,9 @@ import org.koin.dsl.module
 val appModules = module {
     single<DepthSettings> {
         DepthSettingsImpl(get())
+    }
+    single<InstantPlacementSettings> {
+        InstantPlacementSettingsImpl(get())
     }
     single<ARCoreSessionLifecycleHelper> {
         ARCoreSessionLifecycleHelperImpl()
