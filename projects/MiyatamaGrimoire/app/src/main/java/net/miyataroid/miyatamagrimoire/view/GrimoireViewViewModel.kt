@@ -17,35 +17,36 @@ import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
 class GrimoireViewViewModel(
     val arCoreSessionLifecycleHelper: ARCoreSessionLifecycleHelper,
     val depthSettings: DepthSettings,
-): BaseViewModel<GrimoireViewUiState>() {
+) : BaseViewModel<GrimoireViewUiState>() {
     override val initialState: GrimoireViewUiState
         get() = GrimoireViewUiState()
 
     init {
         uiState.update {
             it.copy(
-               shouldShowDepthEnableDialog = depthSettings.shouldShowDepthEnableDialog(),
+                shouldShowDepthEnableDialog = depthSettings.shouldShowDepthEnableDialog(),
                 session = arCoreSessionLifecycleHelper.session,
             )
         }
         arCoreSessionLifecycleHelper.exceptionCallback = { exception ->
-                val message =
-                    when (exception) {
-                        is UnavailableUserDeclinedInstallationException ->
-                            "Please install Google Play Services for AR"
-                        is UnavailableApkTooOldException -> "Please update ARCore"
-                        is UnavailableSdkTooOldException -> "Please update this app"
-                        is UnavailableDeviceNotCompatibleException -> "This device does not support AR"
-                        is CameraNotAvailableException -> "Camera not available. Try restarting the app."
-                        else -> "Failed to create AR session: $exception"
-                    }
+            val message =
+                when (exception) {
+                    is UnavailableUserDeclinedInstallationException ->
+                        "Please install Google Play Services for AR"
+
+                    is UnavailableApkTooOldException -> "Please update ARCore"
+                    is UnavailableSdkTooOldException -> "Please update this app"
+                    is UnavailableDeviceNotCompatibleException -> "This device does not support AR"
+                    is CameraNotAvailableException -> "Camera not available. Try restarting the app."
+                    else -> "Failed to create AR session: $exception"
+                }
             uiState.update {
                 it.copy(
                     arCoreErrorMessage = message
                 )
             }
-            }
-        arCoreSessionLifecycleHelper.beforeSessionResume = {session ->
+        }
+        arCoreSessionLifecycleHelper.beforeSessionResume = { session ->
             session.configure(
                 session.config.apply {
                     lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
@@ -55,13 +56,13 @@ class GrimoireViewViewModel(
                         } else {
                             Config.DepthMode.DISABLED
                         }
-                    instantPlacementMode =InstantPlacementMode.LOCAL_Y_UP
+                    instantPlacementMode = InstantPlacementMode.LOCAL_Y_UP
                 }
             )
         }
     }
 
-    fun setUseDepthForOcclusion(value: Boolean){
+    fun setUseDepthForOcclusion(value: Boolean) {
         depthSettings.useDepthForOcclusion = value
     }
 
