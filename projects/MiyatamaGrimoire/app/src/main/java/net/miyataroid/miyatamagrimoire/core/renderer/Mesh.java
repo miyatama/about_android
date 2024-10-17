@@ -32,7 +32,8 @@ import de.javagl.obj.ObjUtils;
 /**
  * A collection of vertices, faces, and other attributes that define how to render a 3D object.
  *
- * <p>To render the mesh, use {@link SampleRender#draw()}.
+ * <p>To render the mesh, use {link SampleRender#draw()}.
+ * // TODO link SampleRender#draw()
  */
 public class Mesh implements Closeable {
   private static final String TAG = Mesh.class.getSimpleName();

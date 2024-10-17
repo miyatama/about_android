@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.video)
 
+    implementation(libs.javagl.obj)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

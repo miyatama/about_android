@@ -12,6 +12,7 @@ arCore = "1.46.0"
 navigation = "2.8.2"
 koin = "4.0.0"
 coil="3.0.0-rc01"
+javaglObj="0.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,9 @@ koin-androidx-compose-navigation={group = "io.insert-koin", name="koin-androidx-
 coil-compose={group="io.coil-kt.coil3", name="coil-compose", version.ref="coil"}
 coil-network-okhttp={group="io.coil-kt.coil3", name="coil-network-okhttp", version.ref="coil"}
 coil-video={group="io.coil-kt.coil3", name="coil-video", version.ref="coil"}
+
+
+javagl-obj = {group="de.javagl", name="obj", version.ref = "javaglObj"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
