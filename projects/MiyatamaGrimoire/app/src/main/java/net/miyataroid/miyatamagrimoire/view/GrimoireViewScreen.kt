@@ -136,7 +136,7 @@ private fun GrimoireViewScreenContent(
     ) {
         AndroidView(
             factory = { context ->
-                GLSurfaceView(context)
+                GrimoireArView(context)
             },
             update = { surfaceView ->
 
