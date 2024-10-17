@@ -4,6 +4,7 @@ import android.app.Activity
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
+import android.view.MotionEvent
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.ar.core.Anchor
@@ -307,7 +308,8 @@ class GrimoireViewRenderer(
         }
 
         // Handle one tap per frame.
-        handleTap(frame, camera)
+        // TODO tap action
+        // handleTap(frame, camera)
 
         // Keep the screen unlocked while tracking, but allow it to lock when tracking stops.
         trackingStateHelper.updateKeepScreenOnFlag(camera.trackingState)
@@ -326,11 +328,14 @@ class GrimoireViewRenderer(
                 session.hasTrackingPlane() && wrappedAnchors.isNotEmpty() -> null
                 else -> activity.getString(R.string.searching_planes)
             }
+        // TODO show message
+        /*
         if (message == null) {
             activity.view.snackbarHelper.hide(activity)
         } else {
             activity.view.snackbarHelper.showMessage(activity, message)
         }
+        */
 
         // -- Draw background
         if (frame.timestamp != 0L) {
@@ -470,9 +475,8 @@ class GrimoireViewRenderer(
     }
 
     // Handle only one tap per frame, as taps are usually low frequency compared to frame rate.
-    private fun handleTap(frame: Frame, camera: Camera) {
+    private fun handleTap(frame: Frame, camera: Camera, tap: MotionEvent) {
         if (camera.trackingState != TrackingState.TRACKING) return
-        val tap = activity.view.tapHelper.poll() ?: return
 
         val hitResultList =
             if (instantPlacementSettings.isInstantPlacementEnabled) {
@@ -512,12 +516,17 @@ class GrimoireViewRenderer(
 
             // For devices that support the Depth API, shows a dialog to suggest enabling
             // depth-based occlusion. This dialog needs to be spawned on the UI thread.
-            activity.runOnUiThread { activity.view.showOcclusionDialogIfNeeded() }
+            activity.runOnUiThread {
+                // TODO occlusion dialog
+                // oactivity.view.showOcclusionDialogIfNeeded()
+            }
         }
     }
 
-    private fun showError(errorMessage: String) =
-        activity.view.snackbarHelper.showError(activity, errorMessage)
+    private fun showError(errorMessage: String)  {
+        // TODO show error
+        // activity.view.snackbarHelper.showError(activity, errorMessage)
+    }
 }
 
 /**
