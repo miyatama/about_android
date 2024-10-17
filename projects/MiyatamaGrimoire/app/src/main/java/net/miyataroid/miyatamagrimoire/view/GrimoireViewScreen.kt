@@ -105,6 +105,9 @@ fun GrimoireViewScreen(
             onClickBack = {
                 navigateToBack()
             },
+            snackBarMessageCallback = {
+              // TODO show SnackBar
+            },
             modifier = modifier,
         )
 
@@ -128,15 +131,18 @@ fun GrimoireViewScreen(
 private fun GrimoireViewScreenContent(
     uiState: GrimoireViewUiState,
     onClickBack: () -> Unit,
+    snackBarMessageCallback: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     Box(
         modifier = modifier.fillMaxSize()
     ) {
         AndroidView(
             factory = { context ->
-                GrimoireArView(context)
+                GrimoireArView(
+                    context,
+                    snackBarMessageCallback,
+                    )
             },
             update = { surfaceView ->
 

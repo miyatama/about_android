@@ -11,9 +11,21 @@ import net.miyataroid.miyatamagrimoire.R
 
 class GrimoireArView: RelativeLayout, DefaultLifecycleObserver {
     private lateinit var surfaceView: GLSurfaceView
+    var snackbarMessageCallback: (String) -> Unit? = {}
+        set(value) {
+            field = value
+        }
+
     constructor(context: Context): super(context) {
         View.inflate(context, R.layout.grimoire_ar_view, this)
         surfaceView = this.findViewById(R.id.surfaceview)
+    }
+
+    constructor(
+        context: Context,
+        snackBarMessageCallback: (String) -> Unit
+    ): this(context) {
+        this.snackbarMessageCallback = snackbarMessageCallback
     }
 
     override fun onResume(owner: LifecycleOwner) {
