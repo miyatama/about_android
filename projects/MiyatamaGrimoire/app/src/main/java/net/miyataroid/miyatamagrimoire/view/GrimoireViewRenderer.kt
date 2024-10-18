@@ -30,6 +30,7 @@ import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelper
 import net.miyataroid.miyatamagrimoire.core.renderer.Framebuffer
 import net.miyataroid.miyatamagrimoire.core.renderer.GLError
 import net.miyataroid.miyatamagrimoire.core.renderer.Mesh
+import net.miyataroid.miyatamagrimoire.core.renderer.Renderer
 import net.miyataroid.miyatamagrimoire.core.renderer.SampleRender
 import net.miyataroid.miyatamagrimoire.core.renderer.Shader
 import net.miyataroid.miyatamagrimoire.core.renderer.Texture
@@ -45,7 +46,7 @@ class GrimoireViewRenderer(
     val depthSettings: DepthSettings,
     val instantPlacementSettings: InstantPlacementSettings,
     val arCoreSessionHelper: ARCoreSessionLifecycleHelper,
-) : SampleRender.Renderer,
+) : Renderer,
     DefaultLifecycleObserver {
     companion object {
         val TAG = "HelloArRenderer"
@@ -138,7 +139,10 @@ class GrimoireViewRenderer(
         displayRotationHelper.onPause()
     }
 
-    override fun onSurfaceCreated(render: SampleRender) {
+    override fun onSurfaceCreated(render: SampleRender?) {
+        if (render == null) {
+            return
+        }
         // Prepare the rendering objects.
         // This involves reading shaders and 3D model files, so may throw an IOException.
         try {
@@ -147,7 +151,11 @@ class GrimoireViewRenderer(
             virtualSceneFramebuffer = Framebuffer(render, /*width=*/ 1, /*height=*/ 1)
 
             cubemapFilter =
-                SpecularCubemapFilter(render, CUBEMAP_RESOLUTION, CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES)
+                SpecularCubemapFilter(
+                    render,
+                    CUBEMAP_RESOLUTION,
+                    CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES
+                )
             // Load environmental lighting values lookup table
             dfgTexture =
                 Texture(
@@ -189,7 +197,10 @@ class GrimoireViewRenderer(
                     "shaders/point_cloud.frag",
                     /*defines=*/ null
                 )
-                    .setVec4("u_Color", floatArrayOf(31.0f / 255.0f, 188.0f / 255.0f, 210.0f / 255.0f, 1.0f))
+                    .setVec4(
+                        "u_Color",
+                        floatArrayOf(31.0f / 255.0f, 188.0f / 255.0f, 210.0f / 255.0f, 1.0f)
+                    )
                     .setFloat("u_PointSize", 5.0f)
 
             // four entries per vertex: X, Y, Z, confidence
@@ -197,7 +208,12 @@ class GrimoireViewRenderer(
                 VertexBuffer(render, /*numberOfEntriesPerVertex=*/ 4, /*entries=*/ null)
             val pointCloudVertexBuffers = arrayOf(pointCloudVertexBuffer)
             pointCloudMesh =
-                Mesh(render, Mesh.PrimitiveMode.POINTS, /*indexBuffer=*/ null, pointCloudVertexBuffers)
+                Mesh(
+                    render,
+                    Mesh.PrimitiveMode.POINTS, /*indexBuffer=*/
+                    null,
+                    pointCloudVertexBuffers
+                )
 
             // Virtual object to render (ARCore pawn)
             virtualObjectAlbedoTexture =
@@ -232,7 +248,10 @@ class GrimoireViewRenderer(
                     mapOf("NUMBER_OF_MIPMAP_LEVELS" to cubemapFilter.numberOfMipmapLevels.toString())
                 )
                     .setTexture("u_AlbedoTexture", virtualObjectAlbedoTexture)
-                    .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", virtualObjectPbrTexture)
+                    .setTexture(
+                        "u_RoughnessMetallicAmbientOcclusionTexture",
+                        virtualObjectPbrTexture
+                    )
                     .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
                     .setTexture("u_DfgTexture", dfgTexture)
         } catch (e: IOException) {
@@ -241,12 +260,18 @@ class GrimoireViewRenderer(
         }
     }
 
-    override fun onSurfaceChanged(render: SampleRender, width: Int, height: Int) {
+    override fun onSurfaceChanged(render: SampleRender?, width: Int, height: Int) {
+        if (render == null) {
+            return
+        }
         displayRotationHelper.onSurfaceChanged(width, height)
         virtualSceneFramebuffer.resize(width, height)
     }
 
-    override fun onDrawFrame(render: SampleRender) {
+    override fun onDrawFrame(render: SampleRender?) {
+        if (render == null) {
+            return
+        }
         val session = session ?: return
 
         // Texture names should only be set once on a GL thread unless they change. This is done during
@@ -321,10 +346,13 @@ class GrimoireViewRenderer(
                 camera.trackingState == TrackingState.PAUSED &&
                         camera.trackingFailureReason == TrackingFailureReason.NONE ->
                     activity.getString(R.string.searching_planes)
+
                 camera.trackingState == TrackingState.PAUSED ->
                     TrackingStateHelper.getTrackingFailureReasonString(camera)
+
                 session.hasTrackingPlane() && wrappedAnchors.isEmpty() ->
                     activity.getString(R.string.waiting_taps)
+
                 session.hasTrackingPlane() && wrappedAnchors.isNotEmpty() -> null
                 else -> activity.getString(R.string.searching_planes)
             }
@@ -493,6 +521,7 @@ class GrimoireViewRenderer(
                     is Plane ->
                         trackable.isPoseInPolygon(hit.hitPose) &&
                                 PlaneRenderer.calculateDistanceToPlane(hit.hitPose, camera.pose) > 0
+
                     is Point -> trackable.orientationMode == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL
                     is InstantPlacementPoint -> true
                     // DepthPoints are only returned if Config.DepthMode is set to AUTOMATIC.
@@ -512,7 +541,12 @@ class GrimoireViewRenderer(
             // Adding an Anchor tells ARCore that it should track this position in
             // space. This anchor is created on the Plane to place the 3D model
             // in the correct position relative both to the world and to the plane.
-            wrappedAnchors.add(WrappedAnchor(firstHitResult.createAnchor(), firstHitResult.trackable))
+            wrappedAnchors.add(
+                WrappedAnchor(
+                    firstHitResult.createAnchor(),
+                    firstHitResult.trackable
+                )
+            )
 
             // For devices that support the Depth API, shows a dialog to suggest enabling
             // depth-based occlusion. This dialog needs to be spawned on the UI thread.
@@ -523,7 +557,7 @@ class GrimoireViewRenderer(
         }
     }
 
-    private fun showError(errorMessage: String)  {
+    private fun showError(errorMessage: String) {
         // TODO show error
         // activity.view.snackbarHelper.showError(activity, errorMessage)
     }
