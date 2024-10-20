@@ -177,7 +177,7 @@ class GrimoireViewRenderer(
             activity.assets.open("models/dfg.raw").use { it.read(buffer.array()) }
 
             // SampleRender abstraction leaks here.
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, dfgTexture.textureId)
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, dfgTexture.getTextureId())
             GLError.maybeThrowGLException("Failed to bind DFG texture", "glBindTexture")
             GLES30.glTexImage2D(
                 GLES30.GL_TEXTURE_2D,
@@ -281,7 +281,7 @@ class GrimoireViewRenderer(
         // onDrawFrame rather than onSurfaceCreated since the session is not guaranteed to have been
         // initialized during the execution of onSurfaceCreated.
         if (!hasSetTextureNames) {
-            session.setCameraTextureNames(intArrayOf(backgroundRenderer.cameraColorTexture.textureId))
+            session.setCameraTextureNames(intArrayOf(backgroundRenderer.cameraColorTexture.getTextureId()))
             hasSetTextureNames = true
         }
 

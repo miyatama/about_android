@@ -80,7 +80,7 @@ public class BackgroundRenderer {
 
   /**
    * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
-   * during a {@link SampleRender.Renderer} callback, typically in {link SampleRender.Renderer#onSurfaceCreated()}.
+   * during a {@link net.miyataroid.miyatamagrimoire.core.renderer.Renderer} callback, typically in {link SampleRender.Renderer#onSurfaceCreated()}.
    * TODO SampleRender.Renderer#onSurfaceCreated() link
    */
   public BackgroundRenderer(SampleRender render) {
@@ -135,7 +135,7 @@ public class BackgroundRenderer {
             Texture.WrapMode.CLAMP_TO_EDGE,
             Texture.ColorFormat.LINEAR);
       backgroundShader =
-          Shader.createFromAssets(
+          Shader.Companion.createFromAssets(
                   render,
                   "shaders/background_show_depth_color_visualization.vert",
                   "shaders/background_show_depth_color_visualization.frag",
@@ -146,7 +146,7 @@ public class BackgroundRenderer {
               .setDepthWrite(false);
     } else {
       backgroundShader =
-          Shader.createFromAssets(
+          Shader.Companion.createFromAssets(
                   render,
                   "shaders/background_show_camera.vert",
                   "shaders/background_show_camera.frag",
@@ -173,7 +173,7 @@ public class BackgroundRenderer {
     HashMap<String, String> defines = new HashMap<>();
     defines.put("USE_OCCLUSION", useOcclusion ? "1" : "0");
     occlusionShader =
-        Shader.createFromAssets(render, "shaders/occlusion.vert", "shaders/occlusion.frag", defines)
+        Shader.Companion.createFromAssets(render, "shaders/occlusion.vert", "shaders/occlusion.frag", defines)
             .setDepthTest(false)
             .setDepthWrite(false)
             .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
@@ -245,10 +245,10 @@ public class BackgroundRenderer {
   public void drawVirtualScene(
           SampleRender render, Framebuffer virtualSceneFramebuffer, float zNear, float zFar) {
     occlusionShader.setTexture(
-        "u_VirtualSceneColorTexture", virtualSceneFramebuffer.getColorTexture());
+        "u_VirtualSceneColorTexture", virtualSceneFramebuffer.colorTexture);
     if (useOcclusion) {
       occlusionShader
-          .setTexture("u_VirtualSceneDepthTexture", virtualSceneFramebuffer.getDepthTexture())
+          .setTexture("u_VirtualSceneDepthTexture", virtualSceneFramebuffer.depthTexture)
           .setFloat("u_ZNear", zNear)
           .setFloat("u_ZFar", zFar);
     }
