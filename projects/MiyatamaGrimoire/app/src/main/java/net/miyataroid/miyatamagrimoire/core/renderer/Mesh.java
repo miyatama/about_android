@@ -131,7 +131,7 @@ public class Mesh implements Closeable {
    * (location 2, vec3).
    */
   public static Mesh createFromAsset(SampleRender render, String assetFileName) throws IOException {
-    try (InputStream inputStream = render.getAssets().open(assetFileName)) {
+    try (InputStream inputStream = render.getAssetManager().open(assetFileName)) {
       Obj obj = ObjUtils.convertToRenderable(ObjReader.read(inputStream));
 
       // Obtain the data from the OBJ, as direct buffers:

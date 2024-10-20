@@ -151,7 +151,7 @@ public class Shader implements Closeable {
       String fragmentShaderFileName,
       Map<String, String> defines)
       throws IOException {
-    AssetManager assets = render.getAssets();
+    AssetManager assets = render.getAssetManager();
     return new Shader(
         render,
         inputStreamToString(assets.open(vertexShaderFileName)),

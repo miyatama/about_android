@@ -146,7 +146,10 @@ class GrimoireViewRenderer(
         // Prepare the rendering objects.
         // This involves reading shaders and 3D model files, so may throw an IOException.
         try {
-            planeRenderer = PlaneRenderer(render)
+            planeRenderer =
+                PlaneRenderer(
+                    render
+                )
             backgroundRenderer = BackgroundRenderer(render)
             virtualSceneFramebuffer = Framebuffer(render, /*width=*/ 1, /*height=*/ 1)
 
@@ -520,7 +523,7 @@ class GrimoireViewRenderer(
                 when (val trackable = hit.trackable!!) {
                     is Plane ->
                         trackable.isPoseInPolygon(hit.hitPose) &&
-                                PlaneRenderer.calculateDistanceToPlane(hit.hitPose, camera.pose) > 0
+                                planeRenderer.calculateDistanceToPlane(hit.hitPose, camera.pose) > 0
 
                     is Point -> trackable.orientationMode == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL
                     is InstantPlacementPoint -> true

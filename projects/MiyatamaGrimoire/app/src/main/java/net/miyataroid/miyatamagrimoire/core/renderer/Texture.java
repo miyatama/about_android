@@ -125,7 +125,7 @@ public class Texture implements Closeable {
 
   /** Create a texture from the given asset file name. */
   public static Texture createFromAsset(
-      SampleRender render, String assetFileName, WrapMode wrapMode, ColorFormat colorFormat)
+          SampleRender render, String assetFileName, WrapMode wrapMode, ColorFormat colorFormat)
       throws IOException {
     Texture texture = new Texture(render, Target.TEXTURE_2D, wrapMode);
     Bitmap bitmap = null;
@@ -137,7 +137,7 @@ public class Texture implements Closeable {
       // the ARGB_8888 config is actually stored in RGBA order.
       bitmap =
           convertBitmapToConfig(
-              BitmapFactory.decodeStream(render.getAssets().open(assetFileName)),
+              BitmapFactory.decodeStream(render.getAssetManager().open(assetFileName)),
               Bitmap.Config.ARGB_8888);
       ByteBuffer buffer = ByteBuffer.allocateDirect(bitmap.getByteCount());
       bitmap.copyPixelsToBuffer(buffer);
