@@ -255,7 +255,7 @@ class GrimoireViewRenderer(
                         "u_RoughnessMetallicAmbientOcclusionTexture",
                         virtualObjectPbrTexture
                     )
-                    .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
+                    .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture!!)
                     .setTexture("u_DfgTexture", dfgTexture)
         } catch (e: IOException) {
             Log.e(TAG, "Failed to read a required asset file", e)
