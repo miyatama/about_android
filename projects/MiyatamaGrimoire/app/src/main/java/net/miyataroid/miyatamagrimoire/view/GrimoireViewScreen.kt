@@ -34,6 +34,7 @@ import net.miyataroid.miyatamagrimoire.MainActivity
 import com.google.ar.core.Session
 import net.miyataroid.miyatamagrimoire.R
 import net.miyataroid.miyatamagrimoire.core.helpers.CameraPermissionHelper
+import net.miyataroid.miyatamagrimoire.ui.BaseScreen
 import net.miyataroid.miyatamagrimoire.ui.LargeButton
 import net.miyataroid.miyatamagrimoire.ui.SmallButton
 import net.miyataroid.miyatamagrimoire.ui.SystemMessageOverlay
@@ -45,7 +46,6 @@ fun GrimoireViewScreen(
     modifier: Modifier = Modifier,
     viewModel: GrimoireViewViewModel = koinViewModel(),
 ) {
-
     val activity = LocalContext.current as Activity
     var cameraPermissionState by remember {mutableStateOf(CameraPermissionHelper.hasCameraPermission(activity))}
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -100,30 +100,24 @@ fun GrimoireViewScreen(
     } else {
         val uiState by viewModel.uiState.collectAsState()
 
-        GrimoireViewScreenContent(
-            uiState = uiState,
-            onClickBack = {
-                navigateToBack()
-            },
-            snackBarMessageCallback = {
-              // TODO show SnackBar
-            },
-            modifier = modifier,
-        )
-
-        if (uiState.session != null &&
-            uiState.session!!.isDepthModeSupported(Config.DepthMode.AUTOMATIC) &&
-            uiState.shouldShowDepthEnableDialog
+        BaseScreen(
+            isLoading = uiState.isLoading,
         ) {
-            NeedDepthDialog(
-                onClickPositive = {
-                    viewModel.setUseDepthForOcclusion(true)
+            GrimoireViewScreenContent(
+                uiState = uiState,
+                onClickBack = {
+                    navigateToBack()
                 },
-                onClickNegative = {
-                    viewModel.setUseDepthForOcclusion(false)
+                onSetUseDepthForOcclusion = {
+                    viewModel.setUseDepthForOcclusion(it)
                 },
+                snackBarMessageCallback = {
+                    // TODO show SnackBar
+                },
+                modifier = modifier,
             )
         }
+
     }
 }
 
@@ -131,6 +125,7 @@ fun GrimoireViewScreen(
 private fun GrimoireViewScreenContent(
     uiState: GrimoireViewUiState,
     onClickBack: () -> Unit,
+    onSetUseDepthForOcclusion: (Boolean) -> Unit,
     snackBarMessageCallback: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -161,6 +156,20 @@ private fun GrimoireViewScreenContent(
                 onClick = onClickBack,
             )
         }
+    }
+
+    if (uiState.session != null &&
+        uiState.session!!.isDepthModeSupported(Config.DepthMode.AUTOMATIC) &&
+        uiState.shouldShowDepthEnableDialog
+    ) {
+        NeedDepthDialog(
+            onClickPositive = {
+                onSetUseDepthForOcclusion(true)
+            },
+            onClickNegative = {
+                onSetUseDepthForOcclusion(false)
+            },
+        )
     }
 }
 

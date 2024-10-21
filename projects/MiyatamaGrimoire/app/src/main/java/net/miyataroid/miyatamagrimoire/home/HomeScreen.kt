@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.miyataroid.miyatamagrimoire.ui.LargeButton
 import net.miyataroid.miyatamagrimoire.R
+import net.miyataroid.miyatamagrimoire.ui.BaseScreen
 import net.miyataroid.miyatamagrimoire.ui.SmallButton
 import net.miyataroid.miyatamagrimoire.ui.theme.MiyatamaGrimoireTheme
 import org.koin.androidx.compose.koinViewModel
@@ -34,24 +35,26 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    HomeScreenContent(
-        uiState = uiState,
-        onSelectMode = {
-            viewModel.select(it)
-        },
-        onClickNext = {
-            when (uiState.selectedMode) {
-                HomeUiState.SelectedMode.VIEW -> {
-                    navigateToGrimoreView()
-                }
+    BaseScreen(isLoading = uiState.isLoading) {
+        HomeScreenContent(
+            uiState = uiState,
+            onSelectMode = {
+                viewModel.select(it)
+            },
+            onClickNext = {
+                when (uiState.selectedMode) {
+                    HomeUiState.SelectedMode.VIEW -> {
+                        navigateToGrimoreView()
+                    }
 
-                HomeUiState.SelectedMode.EDIT -> {
-                    navigateToGrimoreEdit()
+                    HomeUiState.SelectedMode.EDIT -> {
+                        navigateToGrimoreEdit()
+                    }
                 }
-            }
-        },
-        modifier = modifier,
-    )
+            },
+            modifier = modifier,
+        )
+    }
 }
 
 @Composable

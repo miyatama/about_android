@@ -1,7 +1,7 @@
 package net.miyataroid.miyatamagrimoire.home
 
 data class HomeUiState(
-    val loading: Boolean = false,
+    val isLoading: Boolean = false,
     val selectedMode: SelectedMode = SelectedMode.VIEW,
 ) {
     enum class SelectedMode {

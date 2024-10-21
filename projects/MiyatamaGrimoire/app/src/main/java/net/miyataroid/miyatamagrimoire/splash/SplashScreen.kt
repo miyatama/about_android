@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import net.miyataroid.miyatamagrimoire.ui.BaseScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -18,10 +19,14 @@ fun SplashScreen(
     if (uiState.splashProcessState == SplashUiState.SplashProcessState.FINISH) {
         navigateToHome()
     } else {
-        SplashScreenContent(
-            uiState = uiState,
-            modifier = modifier,
-        )
+        BaseScreen(
+            uiState.isLoading,
+        ) {
+            SplashScreenContent(
+                uiState = uiState,
+                modifier = modifier,
+            )
+        }
     }
 }
 
