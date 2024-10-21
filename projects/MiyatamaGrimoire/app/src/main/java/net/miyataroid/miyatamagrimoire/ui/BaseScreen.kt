@@ -18,6 +18,9 @@ fun BaseScreen(
         modifier = modifier
             .fillMaxSize()
     ) {
+        if (isLoading) {
+
+        }
         content()
     }
 }
