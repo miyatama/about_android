@@ -129,37 +129,45 @@ private fun GrimoireViewScreenContent(
     snackBarMessageCallback: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
-        AndroidView(
-            factory = { context ->
-                GrimoireArView(
-                    context,
-                    snackBarMessageCallback,
-                    )
-            },
-            update = { surfaceView ->
-
-            },
-            modifier = Modifier
-                .fillMaxSize()
-        )
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
+    if (uiState.sampleRender == null ||
+        uiState.renderer == null) {
+        // TODO ローディング待ち
+        Box(modifier = modifier.fillMaxSize())
+    } else {
+        Box(
+            modifier = modifier.fillMaxSize()
         ) {
-            LargeButton(
-                selected = true,
-                text = "< Back",
-                onClick = onClickBack,
+            AndroidView(
+                factory = { context ->
+                    GrimoireArView(
+                        context,
+                        renderer = uiState.renderer,
+                        sampleRender = uiState.sampleRender,
+                        snackBarMessageCallback,
+                    )
+                },
+                update = { surfaceView ->
+
+                },
+                modifier = Modifier
+                    .fillMaxSize()
             )
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+            ) {
+                LargeButton(
+                    selected = true,
+                    text = "< Back",
+                    onClick = onClickBack,
+                )
+            }
         }
     }
 
     if (uiState.session != null &&
-        uiState.session!!.isDepthModeSupported(Config.DepthMode.AUTOMATIC) &&
+        uiState.session.isDepthModeSupported(Config.DepthMode.AUTOMATIC) &&
         uiState.shouldShowDepthEnableDialog
     ) {
         NeedDepthDialog(

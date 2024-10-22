@@ -8,6 +8,9 @@ import android.widget.RelativeLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import net.miyataroid.miyatamagrimoire.R
+import net.miyataroid.miyatamagrimoire.core.renderer.Renderer
+import net.miyataroid.miyatamagrimoire.core.renderer.SampleRender
+import net.miyataroid.miyatamagrimoire.core.renderer.setupRndering
 
 class GrimoireArView: RelativeLayout, DefaultLifecycleObserver {
     private lateinit var surfaceView: GLSurfaceView
@@ -23,9 +26,17 @@ class GrimoireArView: RelativeLayout, DefaultLifecycleObserver {
 
     constructor(
         context: Context,
+        renderer: Renderer,
+        sampleRender: SampleRender,
         snackBarMessageCallback: (String) -> Unit
     ): this(context) {
         this.snackbarMessageCallback = snackbarMessageCallback
+
+        setupRndering(
+            this.surfaceView,
+            renderer,
+            sampleRender,
+        )
     }
 
     override fun onResume(owner: LifecycleOwner) {

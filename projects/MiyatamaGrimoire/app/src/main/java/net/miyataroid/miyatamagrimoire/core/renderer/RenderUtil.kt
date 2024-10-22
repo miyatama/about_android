@@ -5,7 +5,7 @@ import android.opengl.GLSurfaceView
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-fun SetupRndering(glSurfaceView: GLSurfaceView, renderer: Renderer, sampleRender: SampleRender) {
+fun setupRndering(glSurfaceView: GLSurfaceView, renderer: Renderer, sampleRender: SampleRender) {
     glSurfaceView.preserveEGLContextOnPause = true
     glSurfaceView.setEGLContextClientVersion(3)
     glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0)

@@ -24,7 +24,7 @@ import com.google.ar.core.exceptions.NotYetAvailableException
 import net.miyataroid.miyatamagrimoire.R
 import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
-import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelper
+import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelperImpl
 import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelper
 import net.miyataroid.miyatamagrimoire.core.renderer.Framebuffer
@@ -127,7 +127,7 @@ class GrimoireViewRenderer(
     val session
         get() = arCoreSessionHelper.session
 
-    val displayRotationHelper = DisplayRotationHelper(activity)
+    val displayRotationHelper = DisplayRotationHelperImpl(activity)
     val trackingStateHelper = TrackingStateHelper(activity)
 
     override fun onResume(owner: LifecycleOwner) {

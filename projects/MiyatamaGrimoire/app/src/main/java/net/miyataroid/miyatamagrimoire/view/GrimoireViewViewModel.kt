@@ -1,6 +1,7 @@
 package net.miyataroid.miyatamagrimoire.view
 
 import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.Lifecycle
 import com.google.ar.core.Config
 import com.google.ar.core.Config.InstantPlacementMode
@@ -13,10 +14,15 @@ import kotlinx.coroutines.flow.update
 import net.miyataroid.miyatamagrimoire.BaseViewModel
 import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
+import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
+import net.miyataroid.miyatamagrimoire.core.renderer.SampleRender
+import net.miyataroid.miyatamagrimoire.core.renderer.setupRndering
 
 class GrimoireViewViewModel(
+    val appContext: Context,
     val arCoreSessionLifecycleHelper: ARCoreSessionLifecycleHelper,
     val depthSettings: DepthSettings,
+    val instantPlacementSettings: InstantPlacementSettings,
 ) : BaseViewModel<GrimoireViewUiState>() {
     override val initialState: GrimoireViewUiState
         get() = GrimoireViewUiState()
@@ -26,8 +32,10 @@ class GrimoireViewViewModel(
             it.copy(
                 shouldShowDepthEnableDialog = depthSettings.shouldShowDepthEnableDialog(),
                 session = arCoreSessionLifecycleHelper.session,
+                sampleRender = SampleRender(appContext.assets),
             )
         }
+        // HelloArActivity#onCreate()
         arCoreSessionLifecycleHelper.exceptionCallback = { exception ->
             val message =
                 when (exception) {
@@ -60,6 +68,10 @@ class GrimoireViewViewModel(
                 }
             )
         }
+
+        // injectionにて対応済み
+        // depthSettings.onCreate(this)
+        // instantPlacementSettings.onCreate(this)
     }
 
     fun setUseDepthForOcclusion(value: Boolean) {

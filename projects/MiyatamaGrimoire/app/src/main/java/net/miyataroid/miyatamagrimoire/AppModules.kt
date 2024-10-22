@@ -4,6 +4,8 @@ import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelperImpl
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettingsImpl
+import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelper
+import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelperImpl
 import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettingsImpl
 import net.miyataroid.miyatamagrimoire.edit.GrimoireEditViewModel
@@ -23,6 +25,9 @@ val appModules = module {
     single<ARCoreSessionLifecycleHelper> {
         ARCoreSessionLifecycleHelperImpl()
     }
+    single<DisplayRotationHelper>{
+        DisplayRotationHelperImpl(get())
+    }
     viewModel {
         SplashViewModel()
     }
@@ -30,7 +35,7 @@ val appModules = module {
         HomeViewModel()
     }
     viewModel {
-        GrimoireViewViewModel(get(), get())
+        GrimoireViewViewModel(get(), get(), get(), get())
     }
     viewModel {
         GrimoireEditViewModel()
