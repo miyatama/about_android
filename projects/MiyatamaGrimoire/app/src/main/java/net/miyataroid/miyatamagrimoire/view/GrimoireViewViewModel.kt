@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.update
 import net.miyataroid.miyatamagrimoire.BaseViewModel
 import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
+import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
+import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelper
 import net.miyataroid.miyatamagrimoire.core.renderer.SampleRender
 import net.miyataroid.miyatamagrimoire.core.renderer.setupRndering
 
@@ -22,17 +24,20 @@ class GrimoireViewViewModel(
     val appContext: Context,
     val arCoreSessionLifecycleHelper: ARCoreSessionLifecycleHelper,
     val depthSettings: DepthSettings,
+    val displayRotationHelper: DisplayRotationHelper,
+    val trackingStateHelper: TrackingStateHelper,
     val instantPlacementSettings: InstantPlacementSettings,
 ) : BaseViewModel<GrimoireViewUiState>() {
     override val initialState: GrimoireViewUiState
         get() = GrimoireViewUiState()
 
     init {
+        val sampleRender = SampleRender(appContext.assets)
         uiState.update {
             it.copy(
                 shouldShowDepthEnableDialog = depthSettings.shouldShowDepthEnableDialog(),
                 session = arCoreSessionLifecycleHelper.session,
-                sampleRender = SampleRender(appContext.assets),
+                sampleRender = sampleRender,
             )
         }
         // HelloArActivity#onCreate()
@@ -72,6 +77,20 @@ class GrimoireViewViewModel(
         // injectionにて対応済み
         // depthSettings.onCreate(this)
         // instantPlacementSettings.onCreate(this)
+        uiState.update {
+            it.copy(
+                renderer = GrimoireViewRenderer(
+                    depthSettings = depthSettings,
+                    instantPlacementSettings = instantPlacementSettings,
+                    arCoreSessionHelper = arCoreSessionLifecycleHelper,
+                    displayRotationHelper = displayRotationHelper,
+                    trackingStateHelper = trackingStateHelper,
+                    sampleRender = sampleRender,
+                    assetManager = appContext.assets,
+                    resources = appContext.resources,
+                )
+            )
+        }
     }
 
     fun setUseDepthForOcclusion(value: Boolean) {

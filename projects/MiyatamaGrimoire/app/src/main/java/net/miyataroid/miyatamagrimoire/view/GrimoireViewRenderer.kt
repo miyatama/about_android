@@ -1,6 +1,8 @@
 package net.miyataroid.miyatamagrimoire.view
 
 import android.app.Activity
+import android.content.res.AssetManager
+import android.content.res.Resources
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
@@ -24,9 +26,10 @@ import com.google.ar.core.exceptions.NotYetAvailableException
 import net.miyataroid.miyatamagrimoire.R
 import net.miyataroid.miyatamagrimoire.core.helpers.ARCoreSessionLifecycleHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
-import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelperImpl
+import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelper
+import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelperImpl
 import net.miyataroid.miyatamagrimoire.core.renderer.Framebuffer
 import net.miyataroid.miyatamagrimoire.core.renderer.GLError
 import net.miyataroid.miyatamagrimoire.core.renderer.Mesh
@@ -42,10 +45,14 @@ import java.io.IOException
 import java.nio.ByteBuffer
 
 class GrimoireViewRenderer(
-    val activity: Activity,
     val depthSettings: DepthSettings,
     val instantPlacementSettings: InstantPlacementSettings,
     val arCoreSessionHelper: ARCoreSessionLifecycleHelper,
+    val displayRotationHelper: DisplayRotationHelper,
+    val trackingStateHelper: TrackingStateHelper,
+    val sampleRender: SampleRender,
+    val assetManager: AssetManager,
+    val resources: Resources,
 ) : Renderer,
     DefaultLifecycleObserver {
     companion object {
@@ -83,8 +90,6 @@ class GrimoireViewRenderer(
         val CUBEMAP_RESOLUTION = 16
         val CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32
     }
-
-    lateinit var render: SampleRender
     lateinit var planeRenderer: PlaneRenderer
     lateinit var backgroundRenderer: BackgroundRenderer
     lateinit var virtualSceneFramebuffer: Framebuffer
@@ -126,9 +131,6 @@ class GrimoireViewRenderer(
 
     val session
         get() = arCoreSessionHelper.session
-
-    val displayRotationHelper = DisplayRotationHelperImpl(activity)
-    val trackingStateHelper = TrackingStateHelper(activity)
 
     override fun onResume(owner: LifecycleOwner) {
         displayRotationHelper.onResume()
@@ -174,7 +176,7 @@ class GrimoireViewRenderer(
 
             val buffer: ByteBuffer =
                 ByteBuffer.allocateDirect(dfgResolution * dfgResolution * dfgChannels * halfFloatSize)
-            activity.assets.open("models/dfg.raw").use { it.read(buffer.array()) }
+            assetManager.open("models/dfg.raw").use { it.read(buffer.array()) }
 
             // SampleRender abstraction leaks here.
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, dfgTexture.getTextureId())
@@ -348,16 +350,16 @@ class GrimoireViewRenderer(
             when {
                 camera.trackingState == TrackingState.PAUSED &&
                         camera.trackingFailureReason == TrackingFailureReason.NONE ->
-                    activity.getString(R.string.searching_planes)
+                    resources.getString(R.string.searching_planes)
 
                 camera.trackingState == TrackingState.PAUSED ->
-                    TrackingStateHelper.getTrackingFailureReasonString(camera)
+                    TrackingStateHelperImpl.getTrackingFailureReasonString(camera)
 
                 session.hasTrackingPlane() && wrappedAnchors.isEmpty() ->
-                    activity.getString(R.string.waiting_taps)
+                    resources.getString(R.string.waiting_taps)
 
                 session.hasTrackingPlane() && wrappedAnchors.isNotEmpty() -> null
-                else -> activity.getString(R.string.searching_planes)
+                else -> resources.getString(R.string.searching_planes)
             }
         // TODO show message
         /*
@@ -553,10 +555,10 @@ class GrimoireViewRenderer(
 
             // For devices that support the Depth API, shows a dialog to suggest enabling
             // depth-based occlusion. This dialog needs to be spawned on the UI thread.
-            activity.runOnUiThread {
+            // activity.runOnUiThread {
                 // TODO occlusion dialog
-                // oactivity.view.showOcclusionDialogIfNeeded()
-            }
+                // activity.view.showOcclusionDialogIfNeeded()
+            //}
         }
     }
 

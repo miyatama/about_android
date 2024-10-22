@@ -8,9 +8,12 @@ import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelperImpl
 import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettingsImpl
+import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelper
+import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelperImpl
 import net.miyataroid.miyatamagrimoire.edit.GrimoireEditViewModel
 import net.miyataroid.miyatamagrimoire.home.HomeViewModel
 import net.miyataroid.miyatamagrimoire.splash.SplashViewModel
+import net.miyataroid.miyatamagrimoire.view.GrimoireViewRenderer
 import net.miyataroid.miyatamagrimoire.view.GrimoireViewViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -28,6 +31,9 @@ val appModules = module {
     single<DisplayRotationHelper>{
         DisplayRotationHelperImpl(get())
     }
+    single<TrackingStateHelper>{
+        TrackingStateHelperImpl(get())
+    }
     viewModel {
         SplashViewModel()
     }
@@ -35,7 +41,7 @@ val appModules = module {
         HomeViewModel()
     }
     viewModel {
-        GrimoireViewViewModel(get(), get(), get(), get())
+        GrimoireViewViewModel(get(), get(), get(), get(), get(), get())
     }
     viewModel {
         GrimoireEditViewModel()
