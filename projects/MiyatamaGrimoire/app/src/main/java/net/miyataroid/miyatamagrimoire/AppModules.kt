@@ -41,7 +41,7 @@ val appModules = module {
         HomeViewModel()
     }
     viewModel {
-        GrimoireViewViewModel(get(), get(), get(), get(), get(), get())
+        GrimoireViewViewModel(get(), get(), get(), get(), get())
     }
     viewModel {
         GrimoireEditViewModel()

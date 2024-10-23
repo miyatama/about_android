@@ -50,7 +50,6 @@ class GrimoireViewRenderer(
     val arCoreSessionHelper: ARCoreSessionLifecycleHelper,
     val displayRotationHelper: DisplayRotationHelper,
     val trackingStateHelper: TrackingStateHelper,
-    val sampleRender: SampleRender,
     val assetManager: AssetManager,
     val resources: Resources,
 ) : Renderer,
@@ -141,6 +140,12 @@ class GrimoireViewRenderer(
         displayRotationHelper.onPause()
     }
 
+    override var sampleRender: SampleRender = SampleRender(assetManager)
+        get() = field
+        set(value) {
+            field = value
+        }
+
     override fun onSurfaceCreated(render: SampleRender?) {
         if (render == null) {
             return
@@ -153,7 +158,11 @@ class GrimoireViewRenderer(
                     render
                 )
             backgroundRenderer = BackgroundRenderer(render)
-            virtualSceneFramebuffer = Framebuffer(render, /*width=*/ 1, /*height=*/ 1)
+            virtualSceneFramebuffer = Framebuffer(
+                render,
+                width = 1,
+                height = 1,
+            )
 
             cubemapFilter =
                 SpecularCubemapFilter(
@@ -266,7 +275,7 @@ class GrimoireViewRenderer(
     }
 
     override fun onSurfaceChanged(render: SampleRender?, width: Int, height: Int) {
-        if (render == null) {
+        if (render == null || !this::virtualSceneFramebuffer.isInitialized) {
             return
         }
         displayRotationHelper.onSurfaceChanged(width, height)
@@ -274,7 +283,7 @@ class GrimoireViewRenderer(
     }
 
     override fun onDrawFrame(render: SampleRender?) {
-        if (render == null) {
+        if (render == null || !this::backgroundRenderer.isInitialized) {
             return
         }
         val session = session ?: return
@@ -338,7 +347,6 @@ class GrimoireViewRenderer(
         }
 
         // Handle one tap per frame.
-        // TODO tap action
         // handleTap(frame, camera)
 
         // Keep the screen unlocked while tracking, but allow it to lock when tracking stops.

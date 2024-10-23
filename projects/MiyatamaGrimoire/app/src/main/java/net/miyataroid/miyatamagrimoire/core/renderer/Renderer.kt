@@ -3,6 +3,7 @@ package net.miyataroid.miyatamagrimoire.core.renderer
 import android.opengl.GLSurfaceView
 
 interface Renderer {
+    var sampleRender: SampleRender
     /**
      * Called by [SampleRender] when the GL render surface is created.
      *

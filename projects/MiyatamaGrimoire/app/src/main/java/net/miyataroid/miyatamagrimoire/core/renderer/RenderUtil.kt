@@ -5,7 +5,7 @@ import android.opengl.GLSurfaceView
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-fun setupRndering(glSurfaceView: GLSurfaceView, renderer: Renderer, sampleRender: SampleRender) {
+fun setupRndering(glSurfaceView: GLSurfaceView, renderer: Renderer) {
     glSurfaceView.preserveEGLContextOnPause = true
     glSurfaceView.setEGLContextClientVersion(3)
     glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0)
@@ -17,17 +17,17 @@ fun setupRndering(glSurfaceView: GLSurfaceView, renderer: Renderer, sampleRender
                 }
                 GLES30.glEnable(GLES30.GL_BLEND);
                 GLError.maybeThrowGLException("Failed to enable blending", "glEnable");
-                renderer.onSurfaceCreated(sampleRender)
+                renderer.onSurfaceCreated(renderer.sampleRender)
             }
 
             override fun onSurfaceChanged(gl:GL10,  w: Int, h: Int) {
-                sampleRender.setViewport(w, h)
-                renderer.onSurfaceChanged(sampleRender, w, h)
+                renderer.sampleRender.setViewport(w, h)
+                renderer.onSurfaceChanged(renderer.sampleRender, w, h)
             }
 
             override fun onDrawFrame(gl: GL10 ) {
-                sampleRender.clear(/*framebuffer=*/ null, 0f, 0f, 0f, 1f)
-                renderer.onDrawFrame(sampleRender)
+                renderer.sampleRender.clear(/*framebuffer=*/ null, 0f, 0f, 0f, 1f)
+                renderer.onDrawFrame(renderer.sampleRender)
             }
         }
     )

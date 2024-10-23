@@ -27,7 +27,6 @@ class GrimoireArView: RelativeLayout, DefaultLifecycleObserver {
     constructor(
         context: Context,
         renderer: Renderer,
-        sampleRender: SampleRender,
         snackBarMessageCallback: (String) -> Unit
     ): this(context) {
         this.snackbarMessageCallback = snackbarMessageCallback
@@ -35,7 +34,6 @@ class GrimoireArView: RelativeLayout, DefaultLifecycleObserver {
         setupRndering(
             this.surfaceView,
             renderer,
-            sampleRender,
         )
     }
 

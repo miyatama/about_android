@@ -17,6 +17,7 @@ import net.miyataroid.miyatamagrimoire.core.helpers.DepthSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.DisplayRotationHelper
 import net.miyataroid.miyatamagrimoire.core.helpers.InstantPlacementSettings
 import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelper
+import net.miyataroid.miyatamagrimoire.core.helpers.TrackingStateHelperImpl
 import net.miyataroid.miyatamagrimoire.core.renderer.SampleRender
 import net.miyataroid.miyatamagrimoire.core.renderer.setupRndering
 
@@ -25,21 +26,21 @@ class GrimoireViewViewModel(
     val arCoreSessionLifecycleHelper: ARCoreSessionLifecycleHelper,
     val depthSettings: DepthSettings,
     val displayRotationHelper: DisplayRotationHelper,
-    val trackingStateHelper: TrackingStateHelper,
     val instantPlacementSettings: InstantPlacementSettings,
 ) : BaseViewModel<GrimoireViewUiState>() {
     override val initialState: GrimoireViewUiState
         get() = GrimoireViewUiState()
 
     init {
-        val sampleRender = SampleRender(appContext.assets)
         uiState.update {
             it.copy(
                 shouldShowDepthEnableDialog = depthSettings.shouldShowDepthEnableDialog(),
                 session = arCoreSessionLifecycleHelper.session,
-                sampleRender = sampleRender,
             )
         }
+    }
+
+    fun generateGrimoireViewRenderer(activity: Activity) {
         // HelloArActivity#onCreate()
         arCoreSessionLifecycleHelper.exceptionCallback = { exception ->
             val message =
@@ -84,8 +85,7 @@ class GrimoireViewViewModel(
                     instantPlacementSettings = instantPlacementSettings,
                     arCoreSessionHelper = arCoreSessionLifecycleHelper,
                     displayRotationHelper = displayRotationHelper,
-                    trackingStateHelper = trackingStateHelper,
-                    sampleRender = sampleRender,
+                    trackingStateHelper = TrackingStateHelperImpl(activity),
                     assetManager = appContext.assets,
                     resources = appContext.resources,
                 )

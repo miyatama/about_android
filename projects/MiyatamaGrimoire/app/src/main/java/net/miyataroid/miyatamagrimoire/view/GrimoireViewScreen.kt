@@ -100,11 +100,15 @@ fun GrimoireViewScreen(
     } else {
         val uiState by viewModel.uiState.collectAsState()
 
+        val context = LocalContext.current
         BaseScreen(
             isLoading = uiState.isLoading,
         ) {
             GrimoireViewScreenContent(
                 uiState = uiState,
+                onLoadingRenderer = {
+                    viewModel.generateGrimoireViewRenderer(context as Activity)
+                },
                 onClickBack = {
                     navigateToBack()
                 },
@@ -124,15 +128,16 @@ fun GrimoireViewScreen(
 @Composable
 private fun GrimoireViewScreenContent(
     uiState: GrimoireViewUiState,
+    onLoadingRenderer: () -> Unit,
     onClickBack: () -> Unit,
     onSetUseDepthForOcclusion: (Boolean) -> Unit,
     snackBarMessageCallback: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (uiState.sampleRender == null ||
-        uiState.renderer == null) {
+    if (uiState.renderer == null) {
         // TODO ローディング待ち
         Box(modifier = modifier.fillMaxSize())
+        onLoadingRenderer()
     } else {
         Box(
             modifier = modifier.fillMaxSize()
@@ -142,7 +147,6 @@ private fun GrimoireViewScreenContent(
                     GrimoireArView(
                         context,
                         renderer = uiState.renderer,
-                        sampleRender = uiState.sampleRender,
                         snackBarMessageCallback,
                     )
                 },
