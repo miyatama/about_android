@@ -2,6 +2,7 @@ package net.miyataroid.miyatamagrimoire.view
 
 import android.app.Activity
 import android.opengl.GLSurfaceView
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -118,6 +119,9 @@ fun GrimoireViewScreen(
                 snackBarMessageCallback = {
                     // TODO show SnackBar
                 },
+                onTapSurface = {
+                    viewModel.onTapSurface(it)
+                },
                 modifier = modifier,
             )
         }
@@ -132,6 +136,7 @@ private fun GrimoireViewScreenContent(
     onClickBack: () -> Unit,
     onSetUseDepthForOcclusion: (Boolean) -> Unit,
     snackBarMessageCallback: (String) -> Unit,
+    onTapSurface: (MotionEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (uiState.renderer == null) {
@@ -148,6 +153,9 @@ private fun GrimoireViewScreenContent(
                         context,
                         renderer = uiState.renderer,
                         snackBarMessageCallback,
+                        onTapListener = {
+                            onTapSurface(it)
+                        }
                     )
                 },
                 update = { surfaceView ->

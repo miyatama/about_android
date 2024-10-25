@@ -3,6 +3,7 @@ package net.miyataroid.miyatamagrimoire.view
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -14,6 +15,7 @@ import net.miyataroid.miyatamagrimoire.core.renderer.setupRndering
 
 class GrimoireArView: RelativeLayout, DefaultLifecycleObserver {
     private lateinit var surfaceView: GLSurfaceView
+    private lateinit var onTapListener: (MotionEvent) -> Unit
     var snackbarMessageCallback: (String) -> Unit? = {}
         set(value) {
             field = value
@@ -27,10 +29,11 @@ class GrimoireArView: RelativeLayout, DefaultLifecycleObserver {
     constructor(
         context: Context,
         renderer: Renderer,
-        snackBarMessageCallback: (String) -> Unit
+        snackBarMessageCallback: (String) -> Unit,
+        onTapListener: (MotionEvent) -> Unit,
     ): this(context) {
         this.snackbarMessageCallback = snackbarMessageCallback
-
+        this.onTapListener = onTapListener
         setupRndering(
             this.surfaceView,
             renderer,

@@ -2,6 +2,7 @@ package net.miyataroid.miyatamagrimoire.view
 
 import android.app.Activity
 import android.content.Context
+import android.view.MotionEvent
 import androidx.lifecycle.Lifecycle
 import com.google.ar.core.Config
 import com.google.ar.core.Config.InstantPlacementMode
@@ -103,5 +104,15 @@ class GrimoireViewViewModel(
 
     fun setArCoreSessionActivity(activity: Activity) {
         arCoreSessionLifecycleHelper.activity = activity
+    }
+
+    fun onTapSurface(event: MotionEvent) {
+        val renderer = uiState.value.renderer ?: return
+        renderer.addSurfaceTapEvent(event)
+        uiState.update {
+            it.copy(
+                renderer = renderer,
+            )
+        }
     }
 }

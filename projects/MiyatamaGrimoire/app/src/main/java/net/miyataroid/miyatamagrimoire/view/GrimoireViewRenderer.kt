@@ -347,7 +347,7 @@ class GrimoireViewRenderer(
         }
 
         // Handle one tap per frame.
-        // handleTap(frame, camera)
+        handleTap(frame, camera)
 
         // Keep the screen unlocked while tracking, but allow it to lock when tracking stops.
         trackingStateHelper.updateKeepScreenOnFlag(camera.trackingState)
@@ -451,6 +451,11 @@ class GrimoireViewRenderer(
         backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR)
     }
 
+    val tapEventQueue = ArrayDeque<MotionEvent>(listOf())
+    fun addSurfaceTapEvent(event: MotionEvent) {
+        tapEventQueue.add(event)
+    }
+
     /** Checks if we detected at least one plane. */
     private fun Session.hasTrackingPlane() =
         getAllTrackables(Plane::class.java).any { it.trackingState == TrackingState.TRACKING }
@@ -516,8 +521,9 @@ class GrimoireViewRenderer(
     }
 
     // Handle only one tap per frame, as taps are usually low frequency compared to frame rate.
-    private fun handleTap(frame: Frame, camera: Camera, tap: MotionEvent) {
+    private fun handleTap(frame: Frame, camera: Camera) {
         if (camera.trackingState != TrackingState.TRACKING) return
+        val tap = tapEventQueue.removeFirstOrNull() ?: return
 
         val hitResultList =
             if (instantPlacementSettings.isInstantPlacementEnabled) {
