@@ -89,6 +89,13 @@ class GrimoireViewViewModel(
                     trackingStateHelper = TrackingStateHelperImpl(activity),
                     assetManager = appContext.assets,
                     resources = appContext.resources,
+                    showMessage = { message ->
+                        uiState.update { state ->
+                            state.copy(
+                                message = message,
+                            )
+                        }
+                    }
                 )
             )
         }

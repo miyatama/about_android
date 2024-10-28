@@ -10,4 +10,5 @@ data class GrimoireViewUiState (
     val arCoreErrorMessage: String = "",
     val session: Session? = null,
     val renderer: GrimoireViewRenderer? = null,
+    val message: String = "",
 )

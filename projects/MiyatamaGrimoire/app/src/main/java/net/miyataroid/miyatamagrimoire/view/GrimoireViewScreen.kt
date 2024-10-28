@@ -175,6 +175,10 @@ private fun GrimoireViewScreenContent(
                     onClick = onClickBack,
                 )
             }
+            if(uiState.message.isNotEmpty()) {
+                // TODO メッセージ表示
+
+            }
         }
     }
 

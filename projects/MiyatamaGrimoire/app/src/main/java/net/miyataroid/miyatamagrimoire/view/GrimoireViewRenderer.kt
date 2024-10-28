@@ -52,6 +52,7 @@ class GrimoireViewRenderer(
     val trackingStateHelper: TrackingStateHelper,
     val assetManager: AssetManager,
     val resources: Resources,
+    val showMessage: (String) -> Unit,
 ) : Renderer,
     DefaultLifecycleObserver {
     companion object {
@@ -369,14 +370,7 @@ class GrimoireViewRenderer(
                 session.hasTrackingPlane() && wrappedAnchors.isNotEmpty() -> null
                 else -> resources.getString(R.string.searching_planes)
             }
-        // TODO show message
-        /*
-        if (message == null) {
-            activity.view.snackbarHelper.hide(activity)
-        } else {
-            activity.view.snackbarHelper.showMessage(activity, message)
-        }
-        */
+        message?.let(showMessage)
 
         // -- Draw background
         if (frame.timestamp != 0L) {
