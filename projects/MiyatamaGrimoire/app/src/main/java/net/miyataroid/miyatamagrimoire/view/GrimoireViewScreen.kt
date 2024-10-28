@@ -39,6 +39,7 @@ import net.miyataroid.miyatamagrimoire.ui.BaseScreen
 import net.miyataroid.miyatamagrimoire.ui.LargeButton
 import net.miyataroid.miyatamagrimoire.ui.SmallButton
 import net.miyataroid.miyatamagrimoire.ui.SystemMessageOverlay
+import net.miyataroid.miyatamagrimoire.ui.ToastMessage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -175,9 +176,16 @@ private fun GrimoireViewScreenContent(
                     onClick = onClickBack,
                 )
             }
-            if(uiState.message.isNotEmpty()) {
-                // TODO メッセージ表示
-
+            if (uiState.errorMessage.isNotEmpty()) {
+                ToastMessage(
+                    message = uiState.errorMessage,
+                    isError = true,
+                )
+            } else if(uiState.message.isNotEmpty()) {
+                ToastMessage(
+                    message = uiState.message,
+                    isError = false,
+                )
             }
         }
     }

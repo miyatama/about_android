@@ -16,6 +16,7 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
 interface ARCoreSessionLifecycleHelper : DefaultLifecycleObserver {
     var installRequested:Boolean
     var session: Session?
+    var enableSession: Boolean
 
     /**
      * Creating a session may fail. In this case, session will remain null, and this function will be
@@ -54,12 +55,14 @@ interface ARCoreSessionLifecycleHelper : DefaultLifecycleObserver {
             beforeSessionResume?.invoke(session)
             session.resume()
             this.session = session
+            enableSession = true
         } catch (e: CameraNotAvailableException) {
             exceptionCallback?.invoke(e)
         }
     }
 
     override fun onPause(owner: LifecycleOwner) {
+        enableSession = false
         session?.pause()
     }
 

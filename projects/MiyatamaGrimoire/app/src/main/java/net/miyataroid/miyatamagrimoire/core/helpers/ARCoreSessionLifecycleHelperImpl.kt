@@ -10,6 +10,7 @@ class ARCoreSessionLifecycleHelperImpl(
     override var installRequested = false
     override var session: Session? = null
     override var activity: Activity? = null
+    override var enableSession: Boolean = false
 
     /**
      * Creating a session may fail. In this case, session will remain null, and this function will be

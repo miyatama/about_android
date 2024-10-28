@@ -53,6 +53,8 @@ class GrimoireViewRenderer(
     val assetManager: AssetManager,
     val resources: Resources,
     val showMessage: (String) -> Unit,
+    val onError: (String) -> Unit,
+    val showOcclusionDialogIfNeeded: () -> Unit,
 ) : Renderer,
     DefaultLifecycleObserver {
     companion object {
@@ -271,7 +273,7 @@ class GrimoireViewRenderer(
                     .setTexture("u_DfgTexture", dfgTexture)
         } catch (e: IOException) {
             Log.e(TAG, "Failed to read a required asset file", e)
-            showError("Failed to read a required asset file: $e")
+            onError("Failed to read a required asset file: $e")
         }
     }
 
@@ -288,6 +290,9 @@ class GrimoireViewRenderer(
             return
         }
         val session = session ?: return
+        if (!arCoreSessionHelper.enableSession) {
+            return
+        }
 
         // Texture names should only be set once on a GL thread unless they change. This is done during
         // onDrawFrame rather than onSurfaceCreated since the session is not guaranteed to have been
@@ -311,7 +316,7 @@ class GrimoireViewRenderer(
                 session.update()
             } catch (e: CameraNotAvailableException) {
                 Log.e(TAG, "Camera not available during onDrawFrame", e)
-                showError("Camera not available. Try restarting the app.")
+                onError("Camera not available. Try restarting the app.")
                 return
             }
 
@@ -326,7 +331,7 @@ class GrimoireViewRenderer(
             backgroundRenderer.setUseOcclusion(render, depthSettings.useDepthForOcclusion)
         } catch (e: IOException) {
             Log.e(TAG, "Failed to read a required asset file", e)
-            showError("Failed to read a required asset file: $e")
+            onError("Failed to read a required asset file: $e")
             return
         }
 
@@ -518,6 +523,7 @@ class GrimoireViewRenderer(
     private fun handleTap(frame: Frame, camera: Camera) {
         if (camera.trackingState != TrackingState.TRACKING) return
         val tap = tapEventQueue.removeFirstOrNull() ?: return
+        Log.d(TAG, "call handleTap - ${tap}")
 
         val hitResultList =
             if (instantPlacementSettings.isInstantPlacementEnabled) {
@@ -560,19 +566,8 @@ class GrimoireViewRenderer(
                     firstHitResult.trackable
                 )
             )
-
-            // For devices that support the Depth API, shows a dialog to suggest enabling
-            // depth-based occlusion. This dialog needs to be spawned on the UI thread.
-            // activity.runOnUiThread {
-                // TODO occlusion dialog
-                // activity.view.showOcclusionDialogIfNeeded()
-            //}
+            showOcclusionDialogIfNeeded()
         }
-    }
-
-    private fun showError(errorMessage: String) {
-        // TODO show error
-        // activity.view.snackbarHelper.showError(activity, errorMessage)
     }
 }
 

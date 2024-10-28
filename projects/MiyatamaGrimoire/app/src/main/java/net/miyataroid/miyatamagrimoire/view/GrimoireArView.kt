@@ -38,6 +38,10 @@ class GrimoireArView: RelativeLayout, DefaultLifecycleObserver {
             this.surfaceView,
             renderer,
         )
+        this.surfaceView.setOnTouchListener { _, motionEvent ->
+            onTapListener(motionEvent)
+            true
+        }
     }
 
     override fun onResume(owner: LifecycleOwner) {

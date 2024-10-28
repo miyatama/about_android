@@ -11,4 +11,5 @@ data class GrimoireViewUiState (
     val session: Session? = null,
     val renderer: GrimoireViewRenderer? = null,
     val message: String = "",
+    val errorMessage: String = "",
 )

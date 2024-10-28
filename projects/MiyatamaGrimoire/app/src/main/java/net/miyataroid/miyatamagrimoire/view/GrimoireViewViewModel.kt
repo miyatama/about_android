@@ -95,7 +95,21 @@ class GrimoireViewViewModel(
                                 message = message,
                             )
                         }
-                    }
+                    },
+                    onError = { message ->
+                        uiState.update { state ->
+                            state.copy(
+                                errorMessage = message,
+                            )
+                        }
+                    },
+                    showOcclusionDialogIfNeeded = {
+                        uiState.update {  state ->
+                            state.copy(
+                                shouldShowDepthEnableDialog = true,
+                            )
+                        }
+                    },
                 )
             )
         }
